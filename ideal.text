@@ -1,0 +1,14 @@
+- Ys tưởng trò chơi:
+Người chơi sẽ tiêu diệt các kẻ thù của mình để vươt qua màn chơi
+( Người chơi có thể ăn kim cương trong quá trình đó , số kim cương mà người chơi kiếm được có thể được sử dụng để mua nhân vật )
+
+Các bước thực hiện :
+Tạo lớp nhân vật chung với các thuộc tính ( vị trí, tốc độ, máu, hành động di chuyển , khả năng sử dụng súng ,...) => ok
+Tạo các lớp vũ khí cho nhân vật ( ở đây là súng)   => ok 
+Tạo lớp item chứa các vật phẩm ngẫu nhiên mà người chơi có thể nhặt => ok 
+Tạo lớp tiền thưởng ( kim cương )  => ok
+Tạo lớp enemy ( các kẻ thù của người chơi) kế thừa lại các thuộc tính có sẵn của lớp nhân vật ( có thể khả năng tự động thực hiện các thao tác như bắn, di chuyển ,...) => ok
+Tạo bản đồ cho trò chơi ( dạng lưới ) => ok ( đã tạo 2 map)
+Tạo màn hình start game  => ok
+Tạo các nút ( exit , start, restart) => ok
+Tạo màn hình chiến thắng trò chơi
