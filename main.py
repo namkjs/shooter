@@ -6,8 +6,10 @@ import os
 import csv
 mixer.init()
 pygame.init()
-SCREEN_WIDTH = 1280
-SCREEN_HEIGHT = 720
+width = 1280
+height = 720
+SCREEN_WIDTH = width
+SCREEN_HEIGHT = height
 GRAVITY = 0.5
 SCROLL = 200
 # so hang so cot cua map
@@ -87,6 +89,7 @@ items_box = {
     'Ammo'  : ammo_box_img
 }
 # background
+set_up_img = pygame.image.load("img/background/setting.jpg")
 player_img = pygame.image.load("img/player/idle/0.png")
 player_img = pygame.transform.scale(player_img,(player_img.get_width()*10,player_img.get_height()*10))
 pubg_img = pygame.image.load('img/Background/1.jpg')
@@ -101,9 +104,9 @@ sky_img = pygame.image.load('img/Background/sky_cloud.png').convert_alpha()
 start_img = pygame.image.load("img/icons/1.PNG").convert_alpha()
 restart_img = pygame.image.load("img//restart_btn.png").convert_alpha()
 # game_over_img = pygame.image.load("D:/Workspace/game/img/game_over.png").convert_alpha()
-exit_img = pygame.image.load("img/exit_btn.png").convert_alpha()
-resume_img = pygame.image.load("img/resume.jpg").convert_alpha()
-setting_img = pygame.image.load("img/setting_btn.png").convert_alpha()
+exit_img = pygame.image.load("img/exit.png").convert_alpha()
+resume_img = pygame.image.load("img/resume.png").convert_alpha()
+setting_img = pygame.image.load("img/setting.png").convert_alpha()
 speaker_img = pygame.image.load("img/speaker.png").convert_alpha()
 mute_img = pygame.image.load("img/speaker.png").convert_alpha()
 BG = (144, 201, 120)
@@ -521,9 +524,9 @@ diamon_group = pygame.sprite.Group()
 start_btn = Button(start_img,50,600,1)
 restart_btn = Button(restart_img,start_btn.rect.x+100,100,1)
 # resume_btn = Button(resume_img, re)
-exit_btn = Button(exit_img,535,440,1)
-resume_btn = Button(resume_img,510,200,1)
-setting_btn = Button(setting_img,492,320,1)
+exit_btn = Button(exit_img,510,430,1)
+resume_btn = Button(resume_img,510,160,1)
+setting_btn = Button(setting_img,510,295,1)
 choose_map = Button(trungbui,40,500,1)
 # speaker_btn = Button(speaker_img,(40,20))
 # mute_btn = Button(mute_img,(40,20))
@@ -564,7 +567,58 @@ def start_screen():
         #         music =
 
 
+class OptionBox():
 
+    def __init__(self, x, y, w, h, color, highlight_color, font, option_list, selected = 0):
+        self.color = color
+        self.highlight_color = highlight_color
+        self.rect = pygame.Rect(x, y, w, h)
+        self.font = font
+        self.option_list = option_list
+        self.selected = selected
+        self.draw_menu = False
+        self.menu_active = False
+        self.active_option = -1
+
+    def draw(self, surf):
+        pygame.draw.rect(surf, self.highlight_color if self.menu_active else self.color, self.rect)
+        pygame.draw.rect(surf, (0, 0, 0), self.rect, 2)
+        msg = self.font.render(self.option_list[self.selected], 1, (0, 0, 0))
+        surf.blit(msg, msg.get_rect(center = self.rect.center))
+
+        if self.draw_menu:
+            for i, text in enumerate(self.option_list):
+                rect = self.rect.copy()
+                rect.y += (i+1) * self.rect.height
+                pygame.draw.rect(surf, self.highlight_color if i == self.active_option else self.color, rect)
+                msg = self.font.render(text, 1, (0, 0, 0))
+                surf.blit(msg, msg.get_rect(center = rect.center))
+            outer_rect = (self.rect.x, self.rect.y + self.rect.height, self.rect.width, self.rect.height * len(self.option_list))
+            pygame.draw.rect(surf, (0, 0, 0), outer_rect, 2)
+
+    def update(self, event_list):
+        mpos = pygame.mouse.get_pos()
+        self.menu_active = self.rect.collidepoint(mpos)
+        
+        self.active_option = -1
+        for i in range(len(self.option_list)):
+            rect = self.rect.copy()
+            rect.y += (i+1) * self.rect.height
+            if rect.collidepoint(mpos):
+                self.active_option = i
+                break
+
+        if not self.menu_active and self.active_option == -1:
+            self.draw_menu = False
+
+        for event in event_list:
+            if event.type == pygame.MOUSEBUTTONDOWN and event.button == 1:
+                if self.menu_active:
+                    self.draw_menu = not self.draw_menu
+                elif self.draw_menu and self.active_option >= 0:
+                    self.selected = self.active_option
+                    self.draw_menu = False
+                    return self.active_option
 class hearth_bar():
     def __init__ (self,pos_x,pos_y):
         self.pos_x = pos_x
@@ -572,7 +626,9 @@ class hearth_bar():
     def update(self):
         pygame.draw.rect(screen, RED, pygame.Rect(self.pos_x, self.pos_y, 120,10))
         pygame.draw.rect(screen, GREEN, pygame.Rect(self.pos_x,self.pos_y,120*(player1.health/player1.max_health),10))
-
+list1 = OptionBox(
+    700, 148, 160, 40, (150, 150, 150), (100, 200, 255), pygame.font.SysFont(None, 30), 
+    ["1280x720", "800x680", "1920x1280"])
 Black = (0,0,0)
 Silver = (192,192,192)
 hearth_bar = hearth_bar(30,8)
@@ -588,15 +644,28 @@ while run:
         # if exit_btn.draw(screen):
         #     run = False
         if setting == True:
-            screen.blit(background_settings,(0,0))
-            if exit_btn.draw(screen):
-                run = False
-            if resume_btn.draw(screen):
-                setting = False
-            if setting_btn.draw(screen):
-                set_up = True
+            if set_up == False:
+                screen.blit(background_settings,(0,0))
+                if exit_btn.draw(screen):
+                    run = False
+                if resume_btn.draw(screen):
+                    setting = False
+                if setting_btn.draw(screen):
+                    set_up = True
+            else:
+                screen.blit(set_up_img, (0,0))
+                list1.draw(screen)
+                if list1.selected == 0:
+                    width = 800
+                    height = 640
+                    pygame.transform.scale(screen,(screen.get_width()*1.6, int(screen.get_height()*1.125)))
+                if list1.selected == 1:
+                    width = 1280
+                    height = 720
+
+
         if map1 == True:
-            pygame.draw.rect(screen, Black,pygame.Rect( 0,0,1280,720))
+            pygame.draw.rect(screen, Black,  pygame.Rect( 0,0,1280,720))
             pygame.draw.rect(screen, Silver, pygame.Rect(100,100,400,500))
             pygame.draw.rect(screen, Silver, pygame.Rect(700,100,400,500))
 
@@ -714,6 +783,8 @@ while run:
             # if event.key == pygame.K_ESCAPE:
             #     setting = False
     clock.tick(60)
-    pygame.display.update()      
+    pygame.display.update()
+    event_list = pygame.event.get()
+    selected_option = list1.update(event_list)    
 pygame.quit()
 
