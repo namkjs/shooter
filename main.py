@@ -37,7 +37,8 @@ setting = False
 set_up = False
 music = True
 choose_map = False
-
+general_setting = True
+control_setting = False
 
 screen_scroll = 0
 bg_scroll = 0
@@ -89,6 +90,10 @@ items_box = {
     'Ammo'  : ammo_box_img
 }
 # background
+control_setting_img = pygame.image.load("img/background/control_setting.jpg")
+general_img = pygame.image.load("img/icons/general.png")
+control_img = pygame.image.load("img/icons/control.png")
+close_img = pygame.image.load("img/icons/close.png")
 set_up_img = pygame.image.load("img/background/setting.jpg")
 player_img = pygame.image.load("img/player/idle/0.png")
 player_img = pygame.transform.scale(player_img,(player_img.get_width()*10,player_img.get_height()*10))
@@ -528,6 +533,9 @@ exit_btn = Button(exit_img,510,430,1)
 resume_btn = Button(resume_img,510,160,1)
 setting_btn = Button(setting_img,510,295,1)
 choose_map = Button(trungbui,40,500,1)
+close_btn = Button(close_img,510,620,1)
+general_btn = Button(general_img,353,6,1)
+control_btn = Button (control_img,620,10,1)
 # speaker_btn = Button(speaker_img,(40,20))
 # mute_btn = Button(mute_img,(40,20))
 
@@ -627,6 +635,9 @@ class hearth_bar():
         pygame.draw.rect(screen, RED, pygame.Rect(self.pos_x, self.pos_y, 120,10))
         pygame.draw.rect(screen, GREEN, pygame.Rect(self.pos_x,self.pos_y,120*(player1.health/player1.max_health),10))
 list1 = OptionBox(
+    700, 310, 160, 40, (150, 150, 150), (100, 200, 255), pygame.font.SysFont(None, 30), 
+    ["100%", "75%", "50%","25%","0%"])
+list2 = OptionBox(
     700, 148, 160, 40, (150, 150, 150), (100, 200, 255), pygame.font.SysFont(None, 30), 
     ["1280x720", "800x680", "1920x1280"])
 Black = (0,0,0)
@@ -635,6 +646,7 @@ hearth_bar = hearth_bar(30,8)
 map1=False
 while run:
     if start_game==False:
+
         start_screen()
         # screen.blit(all_diamon,(diamon_display_img.get_width()+4,4))
         if start_btn.draw(screen):
@@ -644,6 +656,9 @@ while run:
         # if exit_btn.draw(screen):
         #     run = False
         if setting == True:
+            event_list = pygame.event.get()
+            selected_option = list1.update(event_list)
+            selected_option = list2.update(event_list)
             if set_up == False:
                 screen.blit(background_settings,(0,0))
                 if exit_btn.draw(screen):
@@ -654,14 +669,23 @@ while run:
                     set_up = True
             else:
                 screen.blit(set_up_img, (0,0))
+                list2.draw(screen)
                 list1.draw(screen)
-                if list1.selected == 0:
-                    width = 800
-                    height = 640
-                    pygame.transform.scale(screen,(screen.get_width()*1.6, int(screen.get_height()*1.125)))
-                if list1.selected == 1:
-                    width = 1280
-                    height = 720
+                if close_btn.draw(screen):
+                    set_up = False
+                if general_btn.draw(screen):
+                    general_setting = True
+                    control_setting = False
+                if control_btn.draw(screen):
+                    control_setting = True
+                    general_setting = False
+                if control_setting == True:
+
+                    screen.blit(control_setting_img,(0,0))
+                    if close_btn.draw(screen):
+                        set_up = False
+
+
 
 
         if map1 == True:
@@ -784,7 +808,6 @@ while run:
             #     setting = False
     clock.tick(60)
     pygame.display.update()
-    event_list = pygame.event.get()
-    selected_option = list1.update(event_list)    
+
 pygame.quit()
 
