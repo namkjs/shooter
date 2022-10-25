@@ -57,9 +57,7 @@ BP = font.render('BP',True,YELLOW)
 
 # music
 
-pygame.mixer.music.load('audio/pubg.mp3')
-pygame.mixer.music.set_volume(0.3)
-pygame.mixer.music.play(-1,0.0,1000)
+
 jump_fx = pygame.mixer.Sound('audio/jump.wav')
 jump_fx.set_volume(0.5)
 shoot_fx = pygame.mixer.Sound('audio/ak.wav')
@@ -644,10 +642,15 @@ Black = (0,0,0)
 Silver = (192,192,192)
 hearth_bar = hearth_bar(30,8)
 map1=False
+start_screen()
+pygame.mixer.music.load('audio/pubg.mp3')
 while run:
     if start_game==False:
 
         start_screen()
+        pygame.mixer.music.load('audio/pubg.mp3')
+        pygame.mixer.music.set_volume(0.3)
+        pygame.mixer.music.play(-1,0.0,1000)
         # screen.blit(all_diamon,(diamon_display_img.get_width()+4,4))
         if start_btn.draw(screen):
             start_game =True
@@ -656,32 +659,31 @@ while run:
         # if exit_btn.draw(screen):
         #     run = False
         if setting == True:
-            event_list = pygame.event.get()
-            selected_option = list1.update(event_list)
-            selected_option = list2.update(event_list)
-            if set_up == False:
-                screen.blit(background_settings,(0,0))
-                if exit_btn.draw(screen):
-                    run = False
-                if resume_btn.draw(screen):
-                    setting = False
-                if setting_btn.draw(screen):
-                    set_up = True
-            else:
-                screen.blit(set_up_img, (0,0))
-                list2.draw(screen)
-                list1.draw(screen)
-                if close_btn.draw(screen):
-                    set_up = False
-                if general_btn.draw(screen):
-                    general_setting = True
-                    control_setting = False
-                if control_btn.draw(screen):
-                    control_setting = True
-                    general_setting = False
-                if control_setting == True:
-
-                    screen.blit(control_setting_img,(0,0))
+                event_list = pygame.event.get()
+                selected_option = list1.update(event_list)
+                selected_option = list2.update(event_list)
+                if set_up == False:
+                    screen.blit(background_settings,(0,0))
+                    if exit_btn.draw(screen):
+                        run = False
+                    if resume_btn.draw(screen):
+                        setting = False
+                    if setting_btn.draw(screen):
+                        set_up = True
+                else:
+                    screen.blit(set_up_img, (0,0))
+                    list2.draw(screen)
+                    list1.draw(screen)
+                    if close_btn.draw(screen):
+                        set_up = False
+                    if general_btn.draw(screen):
+                        general_setting = True
+                        control_setting = False
+                    if control_btn.draw(screen):
+                        control_setting = True
+                        general_setting = False
+                    if control_setting == True:
+                        screen.blit(control_setting_img,(0,0))
                     if close_btn.draw(screen):
                         set_up = False
 
@@ -718,7 +720,36 @@ while run:
         diamon_group.draw(screen)
         decoration_group.draw(screen) 
         water_group.draw(screen)
-        exit_group.draw(screen)  
+        exit_group.draw(screen)
+        if setting == True:
+            event_list = pygame.event.get()
+            selected_option = list1.update(event_list)
+            selected_option = list2.update(event_list)
+            if set_up == False:
+                screen.blit(background_settings,(0,0))
+                if exit_btn.draw(screen):
+                    run = False
+                if resume_btn.draw(screen):
+                    setting = False
+                if setting_btn.draw(screen):
+                    set_up = True
+            else:
+                screen.blit(set_up_img, (0,0))
+                list2.draw(screen)
+                list1.draw(screen)
+                if close_btn.draw(screen):
+                    set_up = False
+                if general_btn.draw(screen):
+                    general_setting = True
+                    control_setting = False
+                if control_btn.draw(screen):
+                    control_setting = True
+                    general_setting = False
+                if control_setting == True:
+
+                    screen.blit(control_setting_img,(0,0))
+                    if close_btn.draw(screen):
+                        set_up = False  
         if player1.alive:
             if shoot:
                 player1.shoot()
