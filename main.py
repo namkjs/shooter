@@ -88,6 +88,8 @@ items_box = {
     'Ammo'  : ammo_box_img
 }
 # background
+trungbui_map = pygame.image.load("img/background/trung_bui_map.jpg")
+comming_soon_img = pygame.image.load("img/background/comming_soon.jpg")
 control_setting_img = pygame.image.load("img/background/control_setting.jpg")
 general_img = pygame.image.load("img/icons/general.png")
 control_img = pygame.image.load("img/icons/control.png")
@@ -534,6 +536,7 @@ choose_map = Button(trungbui,40,500,1)
 close_btn = Button(close_img,510,620,1)
 general_btn = Button(general_img,353,6,1)
 control_btn = Button (control_img,620,10,1)
+trungbui_btn = Button(trungbui_map,100,100,1)
 # speaker_btn = Button(speaker_img,(40,20))
 # mute_btn = Button(mute_img,(40,20))
 
@@ -692,8 +695,10 @@ while run:
 
         if map1 == True:
             pygame.draw.rect(screen, Black,  pygame.Rect( 0,0,1280,720))
-            pygame.draw.rect(screen, Silver, pygame.Rect(100,100,400,500))
-            pygame.draw.rect(screen, Silver, pygame.Rect(700,100,400,500))
+            if trungbui_btn.draw(screen):
+                map1 = False
+            # pygame.draw.rect(screen, Silver, pygame.Rect(700,100,400,500))
+            screen.blit(comming_soon_img,(700,100))
 
     else:
         draw_bg()
