@@ -45,16 +45,6 @@ bg_scroll = 0
 
 
 
-
-#Colour:
-YELLOW = (255,255,0)
-GREEN = (0,255,0)
-BLACK = (255,255,255)
-
-#Text
-#Text:
-BP = font.render('BP',True,YELLOW)
-
 # music
 
 
