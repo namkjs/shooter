@@ -44,7 +44,8 @@ screen_scroll = 0
 bg_scroll = 0
 
 
-
+hungngu
+hungngu+1
 
 #Colour:
 YELLOW = (255,255,0)
