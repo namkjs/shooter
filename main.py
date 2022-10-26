@@ -57,7 +57,9 @@ BP = font.render('BP',True,YELLOW)
 
 # music
 
-
+pygame.mixer.music.load('audio/pubg.mp3')
+pygame.mixer.music.set_volume(0.3)
+pygame.mixer.music.play(-1,0.0,1000)
 jump_fx = pygame.mixer.Sound('audio/jump.wav')
 jump_fx.set_volume(0.5)
 shoot_fx = pygame.mixer.Sound('audio/ak.wav')
@@ -646,14 +648,21 @@ Silver = (192,192,192)
 hearth_bar = hearth_bar(30,8)
 map1=False
 start_screen()
-pygame.mixer.music.load('audio/pubg.mp3')
 while run:
+    event_list = pygame.event.get()
     if start_game==False:
-
+        if list1.selected == 4:
+            pygame.mixer.music.set_volume(0)
+        if list1.selected == 3:
+            pygame.mixer.music.set_volume(0.3*0.25)
+        if list1.selected == 2:
+            pygame.mixer.music.set_volume(0.3*0.5)
+        if list1.selected == 1:
+            pygame.mixer.music.set_volume(0.3*0.75)
+        if list1.selected == 0:
+            pygame.mixer.music.set_volume(0.3)       
         start_screen()
-        pygame.mixer.music.load('audio/pubg.mp3')
-        pygame.mixer.music.set_volume(0.3)
-        pygame.mixer.music.play(-1,0.0,1000)
+
         # screen.blit(all_diamon,(diamon_display_img.get_width()+4,4))
         if start_btn.draw(screen):
             start_game =True
@@ -662,7 +671,7 @@ while run:
         # if exit_btn.draw(screen):
         #     run = False
         if setting == True:
-                event_list = pygame.event.get()
+                
                 selected_option = list1.update(event_list)
                 selected_option = list2.update(event_list)
                 if set_up == False:
@@ -682,6 +691,7 @@ while run:
                     if general_btn.draw(screen):
                         general_setting = True
                         control_setting = False
+
                     if control_btn.draw(screen):
                         control_setting = True
                         general_setting = False
@@ -701,6 +711,7 @@ while run:
             screen.blit(comming_soon_img,(700,100))
 
     else:
+        pygame.mixer.music.set_volume(0)
         draw_bg()
         snow_animation()
         new_map.draw()
@@ -809,7 +820,7 @@ while run:
                 player1 =new_map.load_data(map_data)
             if exit_btn.draw(screen):
                 run =False
-    for event in pygame.event.get():
+    for event in event_list:
         #quit game
         if event.type == pygame.QUIT:
             run = False
