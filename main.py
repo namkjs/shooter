@@ -695,7 +695,6 @@ while run:
             #     run = False
             if setting == True:
                     # print (list1.selected)
-                    event_list = pygame.event.get()
                     selected_option = list1.update(event_list)
                     selected_option = list2.update(event_list)
                     if set_up == False:
