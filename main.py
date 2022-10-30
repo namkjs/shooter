@@ -18,7 +18,7 @@ COLS = 150
 # kich thuoc cua 1 o
 TILE_SIZE = SCREEN_HEIGHT//ROWS
 TILE_TYPE = 23
-MAX_LEVEL =3
+MAX_LEVEL =1
 levels =1
 total_diamon = 0
 music = 0
@@ -29,17 +29,18 @@ screen = pygame.display.set_mode((SCREEN_WIDTH,SCREEN_HEIGHT))
 pygame.display.set_caption(" Super Shooter")
 clock = pygame.time.Clock() 
 run = True
+win_game =False
 start_game =False
 move_left = False
 move_right = False
 shoot = False
 setting = False
 set_up = False
-music = True
+# music = True
 choose_map = False
 general_setting = True
 control_setting = False
-
+setting_ingame = False
 screen_scroll = 0
 bg_scroll = 0
 
@@ -56,12 +57,14 @@ BLACK = (255,255,255)
 BP = font.render('BP',True,YELLOW)
 
 # music
-
+pygame.mixer.music.load('audio/pubg.mp3')
+pygame.mixer.music.set_volume(0.3)
+pygame.mixer.music.play(-1,0.0,1000)
 
 jump_fx = pygame.mixer.Sound('audio/jump.wav')
 jump_fx.set_volume(0.5)
 shoot_fx = pygame.mixer.Sound('audio/ak.wav')
-shoot_fx.set_volume(0.5)
+shoot_fx.set_volume(0.3)
 collect_fx = pygame.mixer.Sound('audio/collect.wav')
 death_fx = pygame.mixer.Sound('audio/die.wav')
 low_health_fx = pygame.mixer.Sound('audio/heart_injure.wav')
@@ -87,6 +90,11 @@ items_box = {
     'Health' : health_box_img,
     'Ammo'  : ammo_box_img
 }
+#win game
+game_over_img = pygame.image.load('img/gameover.png').convert_alpha()
+game_over_img = pygame.transform.scale(game_over_img,(game_over_img.get_width()*2,game_over_img.get_height()*2))
+you_win_img = pygame.image.load('img/win.png').convert_alpha()
+you_win_img = pygame.transform.scale(you_win_img,(you_win_img.get_width(),you_win_img.get_height()))
 # background
 trungbui_map = pygame.image.load("img/background/trung_bui_map.jpg")
 comming_soon_img = pygame.image.load("img/background/comming_soon.jpg")
@@ -95,6 +103,7 @@ general_img = pygame.image.load("img/icons/general.png")
 control_img = pygame.image.load("img/icons/control.png")
 close_img = pygame.image.load("img/icons/close.png")
 set_up_img = pygame.image.load("img/background/setting.jpg")
+
 player_img = pygame.image.load("img/player/idle/0.png")
 player_img = pygame.transform.scale(player_img,(player_img.get_width()*10,player_img.get_height()*10))
 pubg_img = pygame.image.load('img/Background/1.jpg')
@@ -103,24 +112,32 @@ pubg_icon = pygame.image.load('img/icons/pubg.png').convert_alpha()
 diamon_display_img = pygame.image.load('img/icons/diamond-sh.png')
 heart_img = pygame.image.load('img/icons/heart.png').convert_alpha()
 pine1_img = pygame.image.load('img/Background/pine1.png').convert_alpha()
+
 pine2_img = pygame.image.load('img/Background/pine2.png').convert_alpha()
+
 mountain_img = pygame.image.load('img/Background/mountain.png').convert_alpha()
+
 sky_img = pygame.image.load('img/Background/sky_cloud.png').convert_alpha()
 start_img = pygame.image.load("img/icons/1.PNG").convert_alpha()
-restart_img = pygame.image.load("img//restart_btn.png").convert_alpha()
-# game_over_img = pygame.image.load("D:/Workspace/game/img/game_over.png").convert_alpha()
+restart_img = pygame.image.load("img/restart.jpg").convert_alpha()
+# game_over_img = pygame.image.load("img/game_over.png").convert_alpha()
+menu_img = pygame.image.load("img/menu.jpg").convert_alpha()
 exit_img = pygame.image.load("img/exit.png").convert_alpha()
+exit1_img = pygame.transform.scale(exit_img,(exit_img.get_width()*1.25,exit_img.get_height()*1.25))
 resume_img = pygame.image.load("img/resume.png").convert_alpha()
+resume1_img = pygame.transform.scale(resume_img,(resume_img.get_width()*1.25,resume_img.get_height()*1.25))
 setting_img = pygame.image.load("img/setting.png").convert_alpha()
+setting1_img = pygame.transform.scale(setting_img,(setting_img.get_width()*1.25,setting_img.get_height()*1.25))
 speaker_img = pygame.image.load("img/speaker.png").convert_alpha()
 mute_img = pygame.image.load("img/speaker.png").convert_alpha()
+restart_png = pygame.image.load("img/restart.png").convert_alpha()
 BG = (144, 201, 120)
 RED = (255,0,0)
 WHITE = (252,252,255)
 
 # create snow fall animation
 snow = []
-for i in range(200):
+for i in range(300):
     x = random.randrange(0,int(SCREEN_WIDTH*7.5))
     y = random.randrange(0,SCREEN_HEIGHT)
     snow.append([x,y])
@@ -131,27 +148,35 @@ def snow_animation():
         snow[ice][1]+=1 
         if snow[ice][1]>SCREEN_HEIGHT:  
             #y is negative as we wanna start from top again and increase y
-            snow[ice][1] = random.randrange(-60,-10)
+            snow[ice][1] = random.randrange(-100,-10)
             snow[ice][0] = random.randrange(0,int(7.5*SCREEN_WIDTH))
 
 
 
 def draw_bg():
     # screen.fill(BG)
-    width = sky_img.get_width()
-    for x in range(5):
-        snow_animation()
-        screen.blit(sky_img, ((x * width) - bg_scroll * 0.5, 0))
-        screen.blit(mountain_img, ((x * width) - bg_scroll, SCREEN_HEIGHT - mountain_img.get_height()))
-        screen.blit(pine1_img, ((x * width) - bg_scroll * 0.7, SCREEN_HEIGHT - pine1_img.get_height() - 150))
-        screen.blit(pine2_img, ((x * width) - bg_scroll * 0.8, SCREEN_HEIGHT - pine2_img.get_height())) 
+
+    if set_up == True:
+        screen.blit(background_setup,(0,0))
+    else:
+        screen.fill(BG)
+        width = sky_img.get_width()
+        for x in range(5):
+            # snow_animation()
+            screen.blit(sky_img, ((x * width) - bg_scroll * 0.5, 0))
+            screen.blit(mountain_img, ((x * width) - bg_scroll * 0.6, SCREEN_HEIGHT - mountain_img.get_height() - 300))
+            screen.blit(pine1_img, ((x * width) - bg_scroll * 0.7, SCREEN_HEIGHT - pine1_img.get_height() - 150))
+            screen.blit(pine2_img, ((x * width) - bg_scroll * 0.8, SCREEN_HEIGHT - pine2_img.get_height())) 
+
+
+
 def draw_charecter(text1,text2,font,text_col,x,y):
     heart = font.render(text1,True,text_col)
     diamon = font.render(text2,True,text_col)
     screen.blit(heart_img,(0,0))
     # screen.blit(heart,(x+heart_img.get_width(),y))
     screen.blit(BP,(0,heart_img.get_height()))
-    screen.blit(diamon,(diamon_display_img.get_width()+x,heart_img.get_height()+y))
+    screen.blit(diamon,(30,heart_img.get_height()+y-3))
 def reset_level():
     enemy_group.empty()
     bullet_group.empty()
@@ -527,16 +552,21 @@ diamon_group = pygame.sprite.Group()
 
 #create button
 start_btn = Button(start_img,50,600,1)
-restart_btn = Button(restart_img,start_btn.rect.x+100,100,1)
+restart_btn = Button(restart_img,SCREEN_WIDTH//2-menu_img.get_width()//2,SCREEN_HEIGHT-300,1)
 # resume_btn = Button(resume_img, re)
-exit_btn = Button(exit_img,510,430,1)
-resume_btn = Button(resume_img,510,160,1)
-setting_btn = Button(setting_img,510,295,1)
+exit_btn = Button(exit1_img,500,450,1)
+exit_btn1 = Button(exit_img,530,460,1)
+resume_btn = Button(resume1_img,500,240,1)
+resume_btn1 = Button(resume_img,530,220,1)
+setting_btn = Button(setting1_img,500,340,1)
+setting_btn1 = Button(setting_img,530,380,1)
+restart_btn1 = Button(restart_png,530,300,1)
 choose_map = Button(trungbui,40,500,1)
 close_btn = Button(close_img,510,620,1)
 general_btn = Button(general_img,353,6,1)
 control_btn = Button (control_img,620,10,1)
 trungbui_btn = Button(trungbui_map,100,100,1)
+menu_btn = Button(menu_img,SCREEN_WIDTH//2-menu_img.get_width()//2,SCREEN_HEIGHT-150,1)
 # speaker_btn = Button(speaker_img,(40,20))
 # mute_btn = Button(mute_img,(40,20))
 
@@ -601,7 +631,7 @@ class OptionBox():
                 rect.y += (i+1) * self.rect.height
                 pygame.draw.rect(surf, self.highlight_color if i == self.active_option else self.color, rect)
                 msg = self.font.render(text, 1, (0, 0, 0))
-                surf.blit(msg, msg.get_rect(center = rect.center))
+                surf.blit(msg, (msg.get_rect(center = rect.center)))
             outer_rect = (self.rect.x, self.rect.y + self.rect.height, self.rect.width, self.rect.height * len(self.option_list))
             pygame.draw.rect(surf, (0, 0, 0), outer_rect, 2)
 
@@ -646,170 +676,255 @@ Silver = (192,192,192)
 hearth_bar = hearth_bar(30,8)
 map1=False
 start_screen()
-pygame.mixer.music.load('audio/pubg.mp3')
+img_down = 0
+img_up = 150
 while run:
-    if start_game==False:
-
-        start_screen()
-        pygame.mixer.music.load('audio/pubg.mp3')
-        pygame.mixer.music.set_volume(0.3)
-        pygame.mixer.music.play(-1,0.0,1000)
-        # screen.blit(all_diamon,(diamon_display_img.get_width()+4,4))
-        if start_btn.draw(screen):
-            start_game =True
-        if choose_map.draw(screen):
-            map1 = True
-        # if exit_btn.draw(screen):
-        #     run = False
-        if setting == True:
-                event_list = pygame.event.get()
-                selected_option = list1.update(event_list)
-                selected_option = list2.update(event_list)
-                if set_up == False:
-                    screen.blit(background_settings,(0,0))
-                    if exit_btn.draw(screen):
-                        run = False
-                    if resume_btn.draw(screen):
-                        setting = False
-                    if setting_btn.draw(screen):
-                        set_up = True
-                else:
-                    screen.blit(set_up_img, (0,0))
-                    list2.draw(screen)
-                    list1.draw(screen)
-                    if close_btn.draw(screen):
-                        set_up = False
-                    if general_btn.draw(screen):
-                        general_setting = True
-                        control_setting = False
-                    if control_btn.draw(screen):
-                        control_setting = True
-                        general_setting = False
-                    if control_setting == True:
-                        screen.blit(control_setting_img,(0,0))
-                    if close_btn.draw(screen):
-                        set_up = False
-
-
-
-
-        if map1 == True:
-            pygame.draw.rect(screen, Black,  pygame.Rect( 0,0,1280,720))
-            if trungbui_btn.draw(screen):
-                map1 = False
-            # pygame.draw.rect(screen, Silver, pygame.Rect(700,100,400,500))
-            screen.blit(comming_soon_img,(700,100))
-
-    else:
-        draw_bg()
-        snow_animation()
-        new_map.draw()
-        hearth_bar.update()
-        draw_charecter(f': {player1.health}',f': {player1.diamon}',font,WHITE,4,4)
-        player1.update()
-        player1.display()
-        for enemy in enemy_group:
-            enemy.automatic()
-            enemy.update()
-            if enemy.disappear>0:
-                enemy.display()
-        #hien thi tat ca dan
-        bullet_group.update()
-        items_box_group.update()
-        diamon_group.update()
-        decoration_group.update() 
-        water_group.update() 
-        exit_group.update() 
-        bullet_group.draw(screen)
-        items_box_group.draw(screen)
-        diamon_group.draw(screen)
-        decoration_group.draw(screen) 
-        water_group.draw(screen)
-        exit_group.draw(screen)
-        if setting == True:
-            event_list = pygame.event.get()
-            selected_option = list1.update(event_list)
-            selected_option = list2.update(event_list)
-            if set_up == False:
-                screen.blit(background_settings,(0,0))
-                if exit_btn.draw(screen):
-                    run = False
-                if resume_btn.draw(screen):
-                    setting = False
-                if setting_btn.draw(screen):
-                    set_up = True
-            else:
-                screen.blit(set_up_img, (0,0))
-                list2.draw(screen)
-                list1.draw(screen)
-                if close_btn.draw(screen):
-                    set_up = False
-                if general_btn.draw(screen):
-                    general_setting = True
-                    control_setting = False
-                if control_btn.draw(screen):
-                    control_setting = True
-                    general_setting = False
-                if control_setting == True:
-
-                    screen.blit(control_setting_img,(0,0))
-                    if close_btn.draw(screen):
-                        set_up = False  
-        if player1.alive:
-            if shoot:
-                player1.shoot()
-            if player1.jump_limit:
-                player1.update_action(2)
-            elif move_left or move_right:
-                player1.update_action(1)
-            else:
-                player1.update_action(0)
-            screen_scroll,level_complete=player1.moving(move_left,move_right)
-            bg_scroll -=screen_scroll
-            if level_complete:
-                screen_scroll = 0
-                levels+=1
-                if levels<=MAX_LEVEL:
-                    bg_scroll =0
-                    map_data = reset_level()
-                    with open(f"D:/Workspace/game/level{levels}_data.csv",newline='') as f:
-                        reader = csv.reader(f,delimiter=',')
-                        for x,row in enumerate(reader):
-                            for y,tile in enumerate(row):
-                                map_data[x][y] = int(tile)
-                    new_map = Map()
-                    player1 =new_map.load_data(map_data)
-                if levels > MAX_LEVEL:
-                    start_game =False
-                    levels = 1
-                    bg_scroll =0
-                    map_data = reset_level()
-                    with open(f"D:/Workspace/game/level{levels}_data.csv",newline='') as f:
-                        reader = csv.reader(f,delimiter=',')
-                        for x,row in enumerate(reader):
-                            for y,tile in enumerate(row):
-                                map_data[x][y] = int(tile)
-                    new_map = Map()
-                    player1 =new_map.load_data(map_data)
+    event_list = pygame.event.get()
+    if win_game==True:
+        screen.fill((0,0,0))
+        if menu_btn.draw(screen):
+            start_game=False
+            win_game = False
+        screen.blit(you_win_img,(SCREEN_WIDTH//2-you_win_img.get_width()//2,min(img_down,img_up)))
+        if img_down <150:
+            img_down+=1
         else:
-            # âm thanh người chơi chết chỉ phát 1 lần
-            if music ==0:
-                death_fx.play()
-                music+=1
-            screen_scroll =0
-            if restart_btn.draw(screen):
-                bg_scroll =0
-                map_data = reset_level()
-                with open(f"D:/Workspace/game/level{levels}_data.csv",newline='') as f:
-                    reader = csv.reader(f,delimiter=',')
-                    for x,row in enumerate(reader):
-                        for y,tile in enumerate(row):
-                            map_data[x][y] = int(tile)
-                new_map = Map()
-                player1 =new_map.load_data(map_data)
-            if exit_btn.draw(screen):
-                run =False
-    for event in pygame.event.get():
+            img_up-=1
+        if img_up==0:
+            img_down=0
+            img_up=150
+    else:
+        if start_game==False:
+            if list1.selected == 4:
+                pygame.mixer.music.set_volume(0)
+            if list1.selected == 3:
+                pygame.mixer.music.set_volume(0.3*0.25)
+            if list1.selected == 2:
+                pygame.mixer.music.set_volume(0.3*0.5)
+            if list1.selected == 1:
+                pygame.mixer.music.set_volume(0.3*0.75)
+            if list1.selected == 0:
+                pygame.mixer.music.set_volume(0.3)
+            start_screen()
+            # screen.blit(all_diamon,(diamon_display_img.get_width()+4,4))
+            if start_btn.draw(screen):
+                start_game =True
+            if choose_map.draw(screen):
+                map1 = True
+            # if exit_btn.draw(screen):
+            #     run = False
+            if setting == True:
+                    # print (list1.selected)
+                    selected_option = list1.update(event_list)
+                    selected_option = list2.update(event_list)
+                    if set_up == False:
+                        screen.blit(background_settings,(0,0))
+                        if exit_btn.draw(screen):
+                            run = False
+                        if resume_btn.draw(screen):
+                            setting = False
+                        if setting_btn.draw(screen):
+                            set_up = True
+                    else:
+                        screen.blit(set_up_img, (0,0))
+                        list2.draw(screen)
+                        list1.draw(screen)
+                        if close_btn.draw(screen):
+                            set_up = False
+                        if general_btn.draw(screen):
+                            general_setting = True
+                            control_setting = False
+                        if control_btn.draw(screen):
+                            control_setting = True
+                            general_setting = False
+                        if control_setting == True:
+                            screen.blit(control_setting_img,(0,0))
+                            # if list1.selected == 1:
+                            #     pygame.mixer.music.set_volume(0.75*0.3)
+                        if close_btn.draw(screen):
+                            set_up = False
+
+            if map1 == True:
+                pygame.draw.rect(screen, Black,  pygame.Rect( 0,0,1280,720))
+                if trungbui_btn.draw(screen):
+                    map1 = False
+                # pygame.draw.rect(screen, Silver, pygame.Rect(700,100,400,500))
+                screen.blit(comming_soon_img,(700,100))
+
+        else:
+            if setting_ingame == True:
+                    selected_option = list1.update(event_list)
+                    selected_option = list2.update(event_list)
+                    if set_up == False:
+                        screen.blit(background_settings,(0,0))
+                        if exit_btn1.draw(screen):
+                            run = False
+                        if resume_btn1.draw(screen):
+                            setting = False
+                        if setting_btn1.draw(screen):
+                            set_up = True
+                        if restart_btn1.draw(screen):
+                            music = 0
+                            bg_scroll =0
+                            map_data = reset_level()
+                            with open(f"level{levels}_data.csv",newline='') as f:
+                                reader = csv.reader(f,delimiter=',')
+                                for x,row in enumerate(reader):
+                                    for y,tile in enumerate(row):
+                                        map_data[x][y] = int(tile)
+                            new_map = Map()
+                            player1 =new_map.load_data(map_data)
+                    else:
+                        screen.blit(set_up_img, (0,0))
+                        list2.draw(screen)
+                        list1.draw(screen)
+                        if close_btn.draw(screen):
+                            set_up = False
+                        if general_btn.draw(screen):
+                            general_setting = True
+                            control_setting = False
+                        if control_btn.draw(screen):
+                            control_setting = True
+                            general_setting = False
+                        if control_setting == True:
+                            screen.blit(control_setting_img,(0,0))
+                            # if list1.selected == 1:
+                            #     pygame.mixer.music.set_volume(0.75*0.3)
+                        if close_btn.draw(screen):
+                            set_up = False
+            else:
+                pygame.mixer.music.set_volume(0)
+                draw_bg()
+                snow_animation()
+                new_map.draw()
+                hearth_bar.update()
+                draw_charecter(f': {player1.health}',f': {player1.diamon}',font,WHITE,4,4)
+                player1.update()
+                player1.display()
+                for enemy in enemy_group:
+                    enemy.automatic()
+                    enemy.update()
+                    if enemy.disappear>0:
+                        enemy.display()
+                #hien thi tat ca dan
+                bullet_group.update()
+                items_box_group.update()
+                diamon_group.update()
+                decoration_group.update() 
+                water_group.update() 
+                exit_group.update() 
+                bullet_group.draw(screen)
+                items_box_group.draw(screen)
+                diamon_group.draw(screen)
+                decoration_group.draw(screen) 
+                water_group.draw(screen)
+                exit_group.draw(screen)
+                if setting == True:
+                    selected_option = list1.update(event_list)
+                    selected_option = list2.update(event_list)
+                    if set_up == False:
+                        screen.blit(background_settings,(0,0))
+                        if exit_btn.draw(screen):
+                            run = False
+                        if resume_btn.draw(screen):
+                            setting = False
+                        if setting_btn.draw(screen):
+                            set_up = True
+                    else:
+                        screen.blit(set_up_img, (0,0))
+                        list2.draw(screen)
+                        list1.draw(screen)
+                        if close_btn.draw(screen):
+                            set_up = False
+                        if general_btn.draw(screen):
+                            general_setting = True
+                            control_setting = False
+                        if control_btn.draw(screen):
+                            control_setting = True
+                            general_setting = False
+                        if control_setting == True:
+
+                            screen.blit(control_setting_img,(0,0))
+                            if close_btn.draw(screen):
+                                set_up = False  
+                if player1.alive:
+                    if shoot:
+                        player1.shoot()
+                    if player1.jump_limit:
+                        player1.update_action(2)
+                    elif move_left or move_right:
+                        player1.update_action(1)
+                    else:
+                        player1.update_action(0)
+                    screen_scroll,level_complete=player1.moving(move_left,move_right)
+                    bg_scroll -=screen_scroll
+                    if level_complete:
+                        screen_scroll = 0
+                        levels+=1
+                        if levels<=MAX_LEVEL:
+                            bg_scroll =0
+                            map_data = reset_level()
+                            with open(f"level{levels}_data.csv",newline='') as f:
+                                reader = csv.reader(f,delimiter=',')
+                                for x,row in enumerate(reader):
+                                    for y,tile in enumerate(row):
+                                        map_data[x][y] = int(tile)
+                            new_map = Map()
+                            player1 =new_map.load_data(map_data)
+                        if levels > MAX_LEVEL:
+                            start_game =False
+                            win_game = True
+                            levels = 1
+                            bg_scroll =0
+                            map_data = reset_level()
+                            with open(f"level{levels}_data.csv",newline='') as f:
+                                reader = csv.reader(f,delimiter=',')
+                                for x,row in enumerate(reader):
+                                    for y,tile in enumerate(row):
+                                        map_data[x][y] = int(tile)
+                            new_map = Map()
+                            player1 =new_map.load_data(map_data)
+                else:
+                    # âm thanh người chơi chết chỉ phát 1 lần
+                    screen_scroll =0
+                    if music ==0:
+                        death_fx.play()
+                    music+=1
+                    if music >=100:
+                        screen.fill((0,0,0))
+                        snow_animation()
+                        screen.blit(game_over_img,(SCREEN_WIDTH//2-game_over_img.get_width()//2,min(img_down,img_up)))
+                        if img_down <150:
+                            img_down+=1
+                        else:
+                            img_up-=1
+                        if img_up==0:
+                            img_down=0
+                            img_up=150
+                        if restart_btn.draw(screen):
+                            music = 0
+                            bg_scroll =0
+                            map_data = reset_level()
+                            with open(f"level{levels}_data.csv",newline='') as f:
+                                reader = csv.reader(f,delimiter=',')
+                                for x,row in enumerate(reader):
+                                    for y,tile in enumerate(row):
+                                        map_data[x][y] = int(tile)
+                            new_map = Map()
+                            player1 =new_map.load_data(map_data)
+                        if menu_btn.draw(screen):
+                            music = 0
+                            start_game=False
+                            bg_scroll =0
+                            map_data = reset_level()
+                            with open(f"level{levels}_data.csv",newline='') as f:
+                                reader = csv.reader(f,delimiter=',')
+                                for x,row in enumerate(reader):
+                                    for y,tile in enumerate(row):
+                                        map_data[x][y] = int(tile)
+                            new_map = Map()
+                            player1 =new_map.load_data(map_data)
+    for event in event_list:
         #quit game
         if event.type == pygame.QUIT:
             run = False
@@ -828,7 +943,10 @@ while run:
             if event.key == pygame.K_SPACE:
                 shoot = True
             if event.key == pygame.K_ESCAPE:
-                setting = True
+                if start_game == False:
+                    setting = True
+                else:
+                    setting_ingame = True
                 # if event.key == pygame.K_ESCAPE:
                 #     setting = False
         if event.type ==pygame.KEYUP:
