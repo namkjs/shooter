@@ -552,7 +552,7 @@ diamon_group = pygame.sprite.Group()
 
 #create button
 start_btn = Button(start_img,50,600,1)
-restart_btn = Button(restart_img,SCREEN_WIDTH//2-menu_img.get_width()//2,SCREEN_HEIGHT-300,1)
+restart_btn = Button(restart_png,SCREEN_WIDTH//2-menu_img.get_width()//2,SCREEN_HEIGHT-300,1)
 # resume_btn = Button(resume_img, re)
 exit_btn = Button(exit1_img,500,450,1)
 exit_btn1 = Button(exit_img,530,460,1)
@@ -566,7 +566,7 @@ close_btn = Button(close_img,510,620,1)
 general_btn = Button(general_img,353,6,1)
 control_btn = Button (control_img,620,10,1)
 trungbui_btn = Button(trungbui_map,100,100,1)
-menu_btn = Button(menu_img,SCREEN_WIDTH//2-menu_img.get_width()//2,SCREEN_HEIGHT-150,1)
+menu_btn = Button(exit_img,SCREEN_WIDTH//2-menu_img.get_width()//2,SCREEN_HEIGHT-150,1)
 # speaker_btn = Button(speaker_img,(40,20))
 # mute_btn = Button(mute_img,(40,20))
 
@@ -755,15 +755,17 @@ while run:
             if setting_ingame == True:
                     selected_option = list1.update(event_list)
                     selected_option = list2.update(event_list)
+
                     if set_up == False:
                         screen.blit(background_settings,(0,0))
                         if exit_btn1.draw(screen):
                             run = False
                         if resume_btn1.draw(screen):
-                            setting = False
+                            setting_ingame = False
                         if setting_btn1.draw(screen):
                             set_up = True
                         if restart_btn1.draw(screen):
+                            print(1)
                             music = 0
                             bg_scroll =0
                             map_data = reset_level()
@@ -774,6 +776,7 @@ while run:
                                         map_data[x][y] = int(tile)
                             new_map = Map()
                             player1 =new_map.load_data(map_data)
+                            setting_ingame = False
                     else:
                         screen.blit(set_up_img, (0,0))
                         list2.draw(screen)
