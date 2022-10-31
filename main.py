@@ -18,7 +18,7 @@ COLS = 150
 # kich thuoc cua 1 o
 TILE_SIZE = SCREEN_HEIGHT//ROWS
 TILE_TYPE = 23
-MAX_LEVEL =1
+MAX_LEVEL =3
 levels =1
 total_diamon = 0
 music = 0
@@ -64,7 +64,7 @@ pygame.mixer.music.play(-1,0.0,1000)
 jump_fx = pygame.mixer.Sound('audio/jump.wav')
 jump_fx.set_volume(0.5)
 shoot_fx = pygame.mixer.Sound('audio/ak.wav')
-shoot_fx.set_volume(0.3)
+shoot_fx.set_volume(0.2)
 collect_fx = pygame.mixer.Sound('audio/collect.wav')
 death_fx = pygame.mixer.Sound('audio/die.wav')
 low_health_fx = pygame.mixer.Sound('audio/heart_injure.wav')
@@ -84,11 +84,9 @@ trungbui = pygame.image.load('img/background/3..jpg')
 
 #pick up item
 health_box_img = pygame.image.load("img/icons/health_box.png").convert_alpha()
-ammo_box_img = pygame.image.load("img/icons/ammo_box.png").convert_alpha()
 
 items_box = {
     'Health' : health_box_img,
-    'Ammo'  : ammo_box_img
 }
 #win game
 game_over_img = pygame.image.load('img/gameover.png').convert_alpha()
@@ -119,7 +117,6 @@ mountain_img = pygame.image.load('img/Background/mountain.png').convert_alpha()
 
 sky_img = pygame.image.load('img/Background/sky_cloud.png').convert_alpha()
 start_img = pygame.image.load("img/icons/1.PNG").convert_alpha()
-restart_img = pygame.image.load("img/restart.jpg").convert_alpha()
 # game_over_img = pygame.image.load("img/game_over.png").convert_alpha()
 menu_img = pygame.image.load("img/menu.jpg").convert_alpha()
 exit_img = pygame.image.load("img/exit.png").convert_alpha()
@@ -128,8 +125,6 @@ resume_img = pygame.image.load("img/resume.png").convert_alpha()
 resume1_img = pygame.transform.scale(resume_img,(resume_img.get_width()*1.25,resume_img.get_height()*1.25))
 setting_img = pygame.image.load("img/setting.png").convert_alpha()
 setting1_img = pygame.transform.scale(setting_img,(setting_img.get_width()*1.25,setting_img.get_height()*1.25))
-speaker_img = pygame.image.load("img/speaker.png").convert_alpha()
-mute_img = pygame.image.load("img/speaker.png").convert_alpha()
 restart_png = pygame.image.load("img/restart.png").convert_alpha()
 BG = (144, 201, 120)
 RED = (255,0,0)
@@ -917,6 +912,7 @@ while run:
                             player1 =new_map.load_data(map_data)
                         if menu_btn.draw(screen):
                             music = 0
+                            level =1
                             start_game=False
                             bg_scroll =0
                             map_data = reset_level()
